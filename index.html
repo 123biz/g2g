@@ -806,6 +806,11 @@ let modalResolve = null;
 
 // ===== 초기화 =====
 document.addEventListener('DOMContentLoaded', () => {
+  // URL에 ?reset=1 있으면 임시저장 삭제
+  if (new URLSearchParams(window.location.search).get('reset') === '1') {
+    localStorage.removeItem('gunsan_survey_draft');
+  }
+  
   renderStepBar();
   setupBizNoFormat();
   setupNumFormat();
