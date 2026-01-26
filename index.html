@@ -1163,6 +1163,17 @@ async function doLookup() {
       document.getElementById('btnEdit').textContent = '기업정보 직접 입력';
     }
 
+    // 처음 응답하는 G2G 기업: A2 자동 '예' 설정 및 변경 불가
+    if (G2G_COMPANIES.includes(bizNo)) {
+      document.getElementById('g2g_y').checked = true;
+      document.getElementById('g2g_n').checked = false;
+      document.getElementById('g2g_y').disabled = true;
+      document.getElementById('g2g_n').disabled = true;
+      updateG2GBenefit();
+      renderStepBar();
+      updateStep6Btn();
+    }
+
     document.getElementById('f_bizno').value = bizNo;
     document.getElementById('companyArea').classList.add('show');
     lookupDone = true;
