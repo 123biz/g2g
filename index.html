@@ -127,13 +127,12 @@
     .data-table th.year { background: var(--primary-light); color: var(--primary-dark); }
     .data-table .item-cell { text-align: left; padding-left: 12px; background: var(--bg); font-weight: 400; }
     .num-input {
-      width: 58px; max-width: 58px; border: 1.5px solid var(--border);
-      border-radius: 6px; padding: 5px 6px; text-align: right; background: #fff;
-      font-size: 0.82rem; outline: none; font-family: inherit; transition: all 0.2s;
+      width: 72px; max-width: 72px; border: 1.5px solid var(--border);
+      border-radius: 6px; padding: 6px 8px; text-align: right; background: #fff;
+      font-size: 0.84rem; outline: none; font-family: inherit; transition: all 0.2s;
     }
     .num-input:focus { border-color: var(--primary); background: #fefce8; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-    .unit { font-size: 0.72rem; color: var(--text-muted); margin-left: 2px; white-space: nowrap; }
-    .data-table td { white-space: nowrap; }
+    .unit { font-size: 0.76rem; color: var(--text-muted); margin-left: 3px; }
 
     /* 만족도 테이블 */
     .rating-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.8rem; }
@@ -233,7 +232,7 @@
       .biz-input { max-width: 100%; }
       .info-table th, .info-table td { padding: 10px 8px; }
       .data-table, .rating-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
-      .num-input { width: 50px; max-width: 50px; font-size: 0.75rem; padding: 4px 5px; }
+      .num-input { width: 60px; max-width: 60px; font-size: 0.78rem; }
       .btn-group { flex-direction: column; gap: 10px; }
       .btn { padding: 16px 20px; font-size: 0.92rem; }
       .addr-wrap { flex-direction: column; }
@@ -270,7 +269,6 @@
         <div class="section-header">
           <span class="section-badge">A</span>
           <span class="section-title">기업 지원 사업(과제) 현황 및 기업정보</span>
-          <span class="section-subtitle">(76개 사 대상)</span>
         </div>
 
         <div id="lookupBox" class="lookup-box">
@@ -342,7 +340,6 @@
         <div class="section-header">
           <span class="section-badge">A</span>
           <span class="section-title">기업 지원 사업(과제) 현황 및 기업정보</span>
-          <span class="section-subtitle">(76개 사 대상)</span>
         </div>
 
         <p class="question"><span class="q-num">A2.</span> 2025년 G2G 시범사업 프로그램에 참여하셨습니까?</p>
@@ -381,7 +378,6 @@
         <div class="section-header">
           <span class="section-badge">B</span>
           <span class="section-title">기업의 경영 및 사업 현황</span>
-          <span class="section-subtitle">(76개 사 대상)</span>
         </div>
 
         <p class="question"><span class="q-num">B1.</span> 귀 사의 경영 현황에 대해 응답해 주십시오.</p>
@@ -465,7 +461,6 @@
         <div class="section-header">
           <span class="section-badge">C</span>
           <span class="section-title">강소특구 육성사업 참여에 대한 만족도</span>
-          <span class="section-subtitle">(76개 사 대상)</span>
         </div>
 
         <p class="question"><span class="q-num">C1.</span> 2025년 참여하신 군산 강소특구의 지원사업에 대한 평가입니다. 세부 항목별에 대해 귀하께서 만족하는 정도를 응답해 주십시오.</p>
@@ -556,7 +551,6 @@
         <div class="section-header">
           <span class="section-badge">C</span>
           <span class="section-title">강소특구 육성사업 참여에 대한 만족도</span>
-          <span class="section-subtitle">(76개 사 대상)</span>
         </div>
 
         <p class="question"><span class="q-num">C2.</span> 군산 강소특구의 지원사업 결과에서 느끼신 만족도를 작성하여 주시기 바랍니다.</p>
@@ -607,7 +601,6 @@
         <div class="section-header">
           <span class="section-badge">C</span>
           <span class="section-title">재추진 및 추천 의향</span>
-          <span class="section-subtitle">(76개 사 대상)</span>
         </div>
 
         <p class="question"><span class="q-num">C3.</span> 강소특구 육성사업 재추진 및 추천 의향</p>
@@ -925,8 +918,18 @@ function setupConditionals() {
   });
   // G2G 변경 시
   document.querySelectorAll('input[name="g2g_flag"]').forEach(r => {
-    r.addEventListener('change', () => { renderStepBar(); updateStep6Btn(); });
+    r.addEventListener('change', () => { renderStepBar(); updateStep6Btn(); updateG2GBenefit(); });
   });
+}
+
+function updateG2GBenefit() {
+  const b4 = document.getElementById('b4');
+  if (isG2G()) {
+    b4.checked = true;
+    b4.disabled = true;
+  } else {
+    b4.disabled = false;
+  }
 }
 
 function updateC3Cond() {
@@ -1118,6 +1121,7 @@ function restoreDraft() {
     }
 
     updateC3Cond();
+    updateG2GBenefit();
     renderStepBar();
     updateStep6Btn();
     if (document.getElementById('e4_6').checked) {
