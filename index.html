@@ -305,7 +305,7 @@
                     <div class="addr-main"><input type="text" id="f_addrHq" name="addr_hq" readonly></div>
                     <div class="addr-contacts">
                       <div class="addr-contact"><label class="required">전화</label><input type="text" id="f_telHq" name="tel_hq" readonly></div>
-                      <div class="addr-contact"><label class="required">Fax</label><input type="text" id="f_faxHq" name="fax_hq" readonly></div>
+                      <div class="addr-contact"><label>Fax</label><input type="text" id="f_faxHq" name="fax_hq" readonly></div>
                     </div>
                   </div>
                 </div>
@@ -851,8 +851,7 @@ function validateStep(step) {
       { id: 'f_bizno', label: '사업자등록번호' },
       { id: 'f_corpno', label: '법인등록번호' },
       { id: 'f_addrHq', label: '본사 주소' },
-      { id: 'f_telHq', label: '본사 전화' },
-      { id: 'f_faxHq', label: '본사 Fax' }
+      { id: 'f_telHq', label: '본사 전화' }
     ];
     missing = fields.filter(f => !document.getElementById(f.id).value.trim()).map(f => f.label);
   }
