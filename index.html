@@ -127,12 +127,12 @@
     .data-table th.year { background: var(--primary-light); color: var(--primary-dark); }
     .data-table .item-cell { text-align: left; padding-left: 12px; background: var(--bg); font-weight: 400; }
     .num-input {
-      width: 72px; max-width: 72px; border: 1.5px solid var(--border);
-      border-radius: 6px; padding: 6px 8px; text-align: right; background: #fff;
-      font-size: 0.84rem; outline: none; font-family: inherit; transition: all 0.2s;
+      width: 52px; max-width: 52px; border: 1.5px solid var(--border);
+      border-radius: 6px; padding: 4px 6px; text-align: right; background: #fff;
+      font-size: 0.8rem; outline: none; font-family: inherit; transition: all 0.2s;
     }
     .num-input:focus { border-color: var(--primary); background: #fefce8; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-    .unit { font-size: 0.76rem; color: var(--text-muted); margin-left: 3px; }
+    .unit { font-size: 0.72rem; color: var(--text-muted); margin-left: 2px; white-space: nowrap; }
 
     /* 만족도 테이블 */
     .rating-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 0.8rem; }
@@ -232,7 +232,7 @@
       .biz-input { max-width: 100%; }
       .info-table th, .info-table td { padding: 10px 8px; }
       .data-table, .rating-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
-      .num-input { width: 60px; max-width: 60px; font-size: 0.78rem; }
+      .num-input { width: 48px; max-width: 48px; font-size: 0.75rem; padding: 3px 4px; }
       .btn-group { flex-direction: column; gap: 10px; }
       .btn { padding: 16px 20px; font-size: 0.92rem; }
       .addr-wrap { flex-direction: column; }
@@ -1047,6 +1047,7 @@ function updateG2GBenefit() {
     b4.checked = true;
     b4.disabled = true;
   } else {
+    b4.checked = false;
     b4.disabled = false;
   }
 }
