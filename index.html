@@ -796,6 +796,8 @@ let lookupDone = false;
 let editMode = false;
 let currentBizNo = '';
 let modalResolve = null;
+let g2gAdditionalMode = false; // G2G 추가 입력 모드
+const G2G_COMPANIES = ['740-88-02953', '459-86-02830', '139-81-23576', '506-87-01172', '401-81-25372', '187-86-01300', '161-35-00914'];
 
 // ===== 초기화 =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -960,6 +962,9 @@ function goStep(n) {
     showAlert('사업자등록번호를 조회해 주세요.', 'error');
     return;
   }
+  
+  // G2G 추가 입력 모드: A~C도 순차적으로 확인/수정 가능 (별도 처리 없음)
+  
   // 필수항목 검사
   if (n > currentStep && !validateStep(currentStep)) return;
   
@@ -1080,11 +1085,49 @@ async function doLookup() {
     // 이미 제출했는지 확인
     const { data: existing } = await db
       .from('responses')
-      .select('id')
+      .select('*')
       .eq('biz_no', bizNo)
       .maybeSingle();
 
     if (existing) {
+      // G2G 기업이면 추가 입력 모드
+      if (G2G_COMPANIES.includes(bizNo)) {
+        g2gAdditionalMode = true;
+        currentBizNo = bizNo;
+        
+        // 기존 응답 데이터 채우기
+        fillExistingResponse(existing);
+        
+        // G2G로 설정 및 변경 불가
+        document.getElementById('g2g_y').checked = true;
+        document.getElementById('g2g_n').checked = false;
+        document.getElementById('g2g_y').disabled = true;
+        document.getElementById('g2g_n').disabled = true;
+        updateG2GBenefit();
+        
+        document.getElementById('dispBizNo').textContent = bizNo;
+        document.getElementById('f_bizno').value = bizNo;
+        document.getElementById('lookupBox').classList.add('done');
+        document.getElementById('companyArea').classList.add('show');
+        
+        msgEl.className = 'msg success';
+        msgEl.textContent = 'G2G 기업 확인 - 기존 응답을 확인/수정 후 D, E 항목을 추가 입력해 주세요.';
+        lookupDone = true;
+        
+        renderStepBar();
+        updateStep6Btn();
+        
+        // 안내 메시지
+        setTimeout(() => {
+          showAlert('G2G 참여기업으로 확인되었습니다.\n\n기존 응답(A~C)을 확인하고 필요시 수정할 수 있습니다.\n마지막에 D, E 항목을 추가로 입력해 주세요.', 'success', 'G2G 추가 입력');
+        }, 300);
+        
+        btn.disabled = false;
+        btn.textContent = '조회';
+        return;
+      }
+      
+      // 일반 기업은 기존 에러
       msgEl.className = 'msg error';
       msgEl.textContent = '이미 설문을 제출한 사업자등록번호입니다.';
       btn.disabled = false;
@@ -1102,6 +1145,7 @@ async function doLookup() {
     if (error) throw error;
 
     currentBizNo = bizNo;
+    g2gAdditionalMode = false;
     document.getElementById('dispBizNo').textContent = bizNo;
 
     if (company) {
@@ -1167,6 +1211,89 @@ function clearCompanyInfo() {
   ['f_name','f_year','f_ceo','f_industry','f_corpno','f_addrHq','f_telHq','f_faxHq','f_addrBranch','f_telBranch','f_faxBranch'].forEach(id => {
     document.getElementById(id).value = '';
   });
+}
+
+// G2G 추가 입력 모드: 기존 응답 데이터 채우기
+function fillExistingResponse(r) {
+  // A1: 기업 정보
+  document.getElementById('f_name').value = r.company_name || '';
+  document.getElementById('f_year').value = r.found_year || '';
+  document.getElementById('f_ceo').value = r.ceo || '';
+  document.getElementById('f_industry').value = r.industry || '';
+  document.getElementById('f_corpno').value = r.corp_no || '';
+  document.getElementById('f_addrHq').value = r.addr_hq || '';
+  document.getElementById('f_telHq').value = r.tel_hq || '';
+  document.getElementById('f_faxHq').value = r.fax_hq || '';
+  document.getElementById('f_addrBranch').value = r.addr_branch || '';
+  document.getElementById('f_telBranch').value = r.tel_branch || '';
+  document.getElementById('f_faxBranch').value = r.fax_branch || '';
+  
+  // A3: 수혜내역
+  if (r.benefits) {
+    r.benefits.split(',').forEach(v => {
+      const cb = document.querySelector(`input[name="benefit"][value="${v}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+  
+  // A4: 작성자
+  const setVal = (name, val) => {
+    const el = document.querySelector(`input[name="${name}"], textarea[name="${name}"]`);
+    if (el && val) el.value = val;
+  };
+  setVal('writer_name', r.writer_name);
+  setVal('writer_dept', r.writer_dept);
+  setVal('writer_phone', r.writer_phone);
+  setVal('writer_email', r.writer_email);
+  
+  // B1: 경영현황
+  const numFields = ['sales', 'export', 'capital', 'rnd', 'emp'];
+  const years = ['2022', '2023', '2024', '2025'];
+  numFields.forEach(field => {
+    years.forEach(year => {
+      const val = r[`${field}_${year}`];
+      if (val) setVal(`${field}_${year}`, fmtNum(val));
+    });
+  });
+  setVal('new_hire_2025', r.new_hire_2025 ? fmtNum(r.new_hire_2025) : '');
+  setVal('new_hire_2026', r.new_hire_2026 ? fmtNum(r.new_hire_2026) : '');
+  
+  // B2, B3
+  setVal('main_product', r.main_product);
+  setVal('main_product_ratio', r.main_product_ratio);
+  
+  // C1: 만족도
+  for (let i = 1; i <= 13; i++) {
+    if (r[`c1_${i}`]) {
+      const radio = document.querySelector(`input[name="c1_${i}"][value="${r[`c1_${i}`]}"]`);
+      if (radio) radio.checked = true;
+    }
+  }
+  setVal('c1_reason', r.c1_reason);
+  
+  // C2: 만족도
+  for (let i = 1; i <= 4; i++) {
+    if (r[`c2_${i}`]) {
+      const radio = document.querySelector(`input[name="c2_${i}"][value="${r[`c2_${i}`]}"]`);
+      if (radio) radio.checked = true;
+    }
+  }
+  setVal('c2_reason', r.c2_reason);
+  
+  // C3: 재추진/추천
+  if (r.c3_retry) {
+    const radio = document.querySelector(`input[name="c3_retry"][value="${r.c3_retry}"]`);
+    if (radio) radio.checked = true;
+  }
+  if (r.c3_recommend) {
+    const radio = document.querySelector(`input[name="c3_recommend"][value="${r.c3_recommend}"]`);
+    if (radio) radio.checked = true;
+  }
+  setVal('c3_retry_reason', r.c3_retry_reason);
+  setVal('c3_recommend_reason', r.c3_recommend_reason);
+  setVal('c4_suggestion', r.c4_suggestion);
+  
+  updateC3Cond();
 }
 
 // ===== 정보 수정 모드 =====
@@ -1356,7 +1483,19 @@ async function submitSurvey() {
   };
 
   try {
-    const { error } = await db.from('responses').insert([payload]);
+    let error;
+    
+    if (g2gAdditionalMode) {
+      // G2G 추가 입력 모드: 전체 내용 UPDATE (수정 가능)
+      payload.g2g_flag = 'YES'; // G2G로 강제 설정
+      const result = await db.from('responses').update(payload).eq('biz_no', currentBizNo);
+      error = result.error;
+    } else {
+      // 일반 모드: INSERT
+      const result = await db.from('responses').insert([payload]);
+      error = result.error;
+    }
+    
     if (error) {
       if (error.code === '23505') {
         await showAlert('이미 제출된 사업자등록번호입니다.\n중복 제출이 불가합니다.', 'error', '중복 제출');
@@ -1367,7 +1506,10 @@ async function submitSurvey() {
     }
 
     localStorage.removeItem('gunsan_survey_draft');
-    await showAlert('끝까지 응답해 주셔서\n진심으로 감사드립니다.\n\n설문이 성공적으로 저장되었습니다.', 'success', '제출 완료');
+    const msg = g2gAdditionalMode 
+      ? 'G2G 추가 항목(D, E)이\n성공적으로 저장되었습니다.\n\n감사합니다.' 
+      : '끝까지 응답해 주셔서\n진심으로 감사드립니다.\n\n설문이 성공적으로 저장되었습니다.';
+    await showAlert(msg, 'success', '제출 완료');
     location.reload();
   } catch (err) {
     await showAlert('서버 오류가 발생했습니다.\n다시 시도해 주세요.\n\n' + (err.message || ''), 'error', '서버 오류');
