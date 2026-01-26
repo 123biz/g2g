@@ -1147,24 +1147,9 @@ async function doLookup() {
     g2gAdditionalMode = false;
     document.getElementById('dispBizNo').textContent = bizNo;
 
-    if (company) {
-      // 기존 기업
-      fillCompanyInfo(company);
-      document.getElementById('lookupBox').classList.add('done');
-      msgEl.className = 'msg success';
-      msgEl.textContent = '조회 완료';
-      document.getElementById('btnEdit').textContent = '정보 수정';
-    } else {
-      // 미등록 기업
-      clearCompanyInfo();
-      document.getElementById('lookupBox').classList.remove('done');
-      msgEl.className = 'msg warn';
-      msgEl.textContent = '등록되지 않은 기업입니다. 기업정보를 직접 입력해 주세요.';
-      document.getElementById('btnEdit').textContent = '기업정보 직접 입력';
-    }
-
     // 처음 응답하는 G2G 기업: A2 자동 '예' 설정 및 변경 불가
-    if (G2G_COMPANIES.includes(bizNo)) {
+    const isG2GCompany = G2G_COMPANIES.includes(bizNo);
+    if (isG2GCompany) {
       document.getElementById('g2g_y').checked = true;
       document.getElementById('g2g_n').checked = false;
       document.getElementById('g2g_y').disabled = true;
@@ -1172,6 +1157,29 @@ async function doLookup() {
       updateG2GBenefit();
       renderStepBar();
       updateStep6Btn();
+    }
+
+    if (company) {
+      // 기존 기업
+      fillCompanyInfo(company);
+      document.getElementById('lookupBox').classList.add('done');
+      msgEl.className = 'msg success';
+      msgEl.textContent = isG2GCompany ? 'G2G 참여기업 확인 - 조회 완료' : '조회 완료';
+      document.getElementById('btnEdit').textContent = '정보 수정';
+    } else {
+      // 미등록 기업
+      clearCompanyInfo();
+      if (isG2GCompany) {
+        // G2G 기업이지만 companies 테이블에 미등록
+        document.getElementById('lookupBox').classList.add('done');
+        msgEl.className = 'msg success';
+        msgEl.textContent = 'G2G 참여기업 확인 - 기업정보를 입력해 주세요.';
+      } else {
+        document.getElementById('lookupBox').classList.remove('done');
+        msgEl.className = 'msg warn';
+        msgEl.textContent = '등록되지 않은 기업입니다. 기업정보를 직접 입력해 주세요.';
+      }
+      document.getElementById('btnEdit').textContent = '기업정보 직접 입력';
     }
 
     document.getElementById('f_bizno').value = bizNo;
