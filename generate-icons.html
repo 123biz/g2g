@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA 아이콘 생성기</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; padding: 40px; background: #f0f0f0; text-align: center; }
+    h1 { color: #333; }
+    .icon-preview { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin: 30px 0; }
+    .icon-item { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .icon-item img, .icon-item canvas { border-radius: 20%; }
+    .icon-item p { margin: 10px 0 0; font-size: 14px; color: #666; }
+    button { background: #4f46e5; color: #fff; border: none; padding: 15px 40px; font-size: 16px; border-radius: 10px; cursor: pointer; margin: 10px; }
+    button:hover { background: #3730a3; }
+    .instructions { background: #fff; padding: 20px 30px; border-radius: 12px; margin-top: 30px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .instructions h3 { color: #4f46e5; }
+    .instructions ol { line-height: 2; }
+    code { background: #eee; padding: 2px 8px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>📱 PWA 앱 아이콘 생성기</h1>
+  <p>군산 강소특구 설문조사 앱 아이콘을 생성합니다.</p>
+  
+  <div class="icon-preview" id="preview"></div>
+  
+  <button onclick="downloadAll()">📥 모든 아이콘 다운로드</button>
+  
+  <div class="instructions">
+    <h3>📋 사용 방법</h3>
+    <ol>
+      <li>위 <strong>"모든 아이콘 다운로드"</strong> 버튼을 클릭합니다.</li>
+      <li>다운로드된 PNG 파일들을 프로젝트 폴더의 <code>icons/</code> 폴더에 넣습니다.</li>
+      <li>GitHub에 커밋 & 푸시합니다.</li>
+      <li>이 파일(<code>generate-icons.html</code>)은 삭제해도 됩니다.</li>
+    </ol>
+    <h3>📁 최종 폴더 구조</h3>
+    <pre style="background:#f5f5f5;padding:15px;border-radius:8px;overflow-x:auto;">
+📂 repository/
+├── index.html
+├── dashboard.html
+├── manifest.json
+├── sw.js
+└── 📂 icons/
+    ├── icon-72.png
+    ├── icon-96.png
+    ├── icon-128.png
+    ├── icon-144.png
+    ├── icon-152.png
+    ├── icon-192.png
+    ├── icon-384.png
+    └── icon-512.png
+    </pre>
+  </div>
+
+<script>
+const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const canvases = {};
+
+function createIcon(size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  
+  // 배경 그라데이션
+  const gradient = ctx.createLinearGradient(0, 0, size, size);
+  gradient.addColorStop(0, '#4f46e5');
+  gradient.addColorStop(1, '#3730a3');
+  
+  // 둥근 사각형 배경
+  const radius = size * 0.22;
+  ctx.beginPath();
+  ctx.moveTo(radius, 0);
+  ctx.lineTo(size - radius, 0);
+  ctx.quadraticCurveTo(size, 0, size, radius);
+  ctx.lineTo(size, size - radius);
+  ctx.quadraticCurveTo(size, size, size - radius, size);
+  ctx.lineTo(radius, size);
+  ctx.quadraticCurveTo(0, size, 0, size - radius);
+  ctx.lineTo(0, radius);
+  ctx.quadraticCurveTo(0, 0, radius, 0);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  
+  // 텍스트 "군산" + 아이콘
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  // 클립보드/설문 아이콘 그리기
+  const iconSize = size * 0.45;
+  const iconX = size / 2;
+  const iconY = size * 0.42;
+  
+  // 클립보드 외곽
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = size * 0.03;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  const clipW = iconSize * 0.7;
+  const clipH = iconSize * 0.9;
+  const clipX = iconX - clipW / 2;
+  const clipY = iconY - clipH / 2;
+  const clipRadius = size * 0.04;
+  
+  // 클립보드 사각형
+  ctx.beginPath();
+  ctx.moveTo(clipX + clipRadius, clipY);
+  ctx.lineTo(clipX + clipW - clipRadius, clipY);
+  ctx.quadraticCurveTo(clipX + clipW, clipY, clipX + clipW, clipY + clipRadius);
+  ctx.lineTo(clipX + clipW, clipY + clipH - clipRadius);
+  ctx.quadraticCurveTo(clipX + clipW, clipY + clipH, clipX + clipW - clipRadius, clipY + clipH);
+  ctx.lineTo(clipX + clipRadius, clipY + clipH);
+  ctx.quadraticCurveTo(clipX, clipY + clipH, clipX, clipY + clipH - clipRadius);
+  ctx.lineTo(clipX, clipY + clipRadius);
+  ctx.quadraticCurveTo(clipX, clipY, clipX + clipRadius, clipY);
+  ctx.closePath();
+  ctx.stroke();
+  
+  // 클립 부분 (상단 홀더)
+  const holderW = clipW * 0.5;
+  const holderH = size * 0.06;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(iconX - holderW/2, clipY - holderH/2, holderW, holderH);
+  
+  // 체크라인들
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = size * 0.025;
+  const lineStartX = clipX + clipW * 0.2;
+  const lineEndX = clipX + clipW * 0.8;
+  const lineY1 = clipY + clipH * 0.35;
+  const lineY2 = clipY + clipH * 0.55;
+  const lineY3 = clipY + clipH * 0.75;
+  
+  // 체크마크
+  ctx.beginPath();
+  ctx.moveTo(lineStartX, lineY1);
+  ctx.lineTo(lineStartX + clipW * 0.1, lineY1 + clipH * 0.05);
+  ctx.lineTo(lineStartX + clipW * 0.2, lineY1 - clipH * 0.05);
+  ctx.stroke();
+  
+  // 라인
+  ctx.beginPath();
+  ctx.moveTo(lineStartX + clipW * 0.3, lineY1);
+  ctx.lineTo(lineEndX, lineY1);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(lineStartX, lineY2);
+  ctx.lineTo(lineEndX, lineY2);
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(lineStartX, lineY3);
+  ctx.lineTo(lineEndX * 0.7, lineY3);
+  ctx.stroke();
+  
+  // "군산G2G" 텍스트
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `bold ${size * 0.13}px "Malgun Gothic", sans-serif`;
+  ctx.fillText('군산G2G', iconX, size * 0.82);
+  
+  return canvas;
+}
+
+// 미리보기 생성
+function generatePreviews() {
+  const preview = document.getElementById('preview');
+  sizes.forEach(size => {
+    const canvas = createIcon(size);
+    canvases[size] = canvas;
+    
+    const div = document.createElement('div');
+    div.className = 'icon-item';
+    
+    const displaySize = Math.min(size, 128);
+    const img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    img.width = displaySize;
+    img.height = displaySize;
+    
+    const p = document.createElement('p');
+    p.textContent = `${size}x${size}`;
+    
+    div.appendChild(img);
+    div.appendChild(p);
+    preview.appendChild(div);
+  });
+}
+
+// 개별 다운로드
+function downloadIcon(size) {
+  const canvas = canvases[size];
+  const link = document.createElement('a');
+  link.download = `icon-${size}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// 전체 다운로드
+function downloadAll() {
+  sizes.forEach((size, i) => {
+    setTimeout(() => downloadIcon(size), i * 200);
+  });
+}
+
+// 페이지 로드 시 실행
+generatePreviews();
+</script>
+</body>
+</html>
+
