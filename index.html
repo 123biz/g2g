@@ -4,15 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>군산 강소특구 성과 및 수요조사</title>
-  
-  <!-- PWA 설정 -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4f46e5">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="군산G2G">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1585,70 +1576,6 @@ function showConfirm(msg, title = '확인') {
 function closeModal(result) {
   document.getElementById('modal').classList.remove('show');
   if (modalResolve) { modalResolve(result); modalResolve = null; }
-}
-
-// ===== PWA Service Worker 등록 =====
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('SW 등록 완료:', reg.scope))
-      .catch(err => console.log('SW 등록 실패:', err));
-  });
-}
-
-// ===== PWA 설치 프롬프트 =====
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  showInstallBanner();
-});
-
-function showInstallBanner() {
-  // 이미 설치된 경우 또는 이미 배너를 닫은 경우 표시 안함
-  if (window.matchMedia('(display-mode: standalone)').matches) return;
-  if (sessionStorage.getItem('pwa_banner_closed')) return;
-  
-  const banner = document.createElement('div');
-  banner.id = 'pwa-banner';
-  banner.innerHTML = `
-    <div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#4f46e5,#3730a3);color:#fff;padding:16px 20px;border-radius:16px;box-shadow:0 8px 32px rgba(79,70,229,0.3);z-index:9998;display:flex;align-items:center;gap:16px;max-width:90%;animation:slideUp 0.4s ease-out;">
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">📱 앱으로 설치하기</div>
-        <div style="font-size:0.8rem;opacity:0.9;">홈 화면에 추가하면 더 빠르게 접속할 수 있어요!</div>
-      </div>
-      <button onclick="installPWA()" style="background:#fff;color:#4f46e5;border:none;padding:10px 20px;border-radius:10px;font-weight:700;font-size:0.85rem;cursor:pointer;white-space:nowrap;">설치</button>
-      <button onclick="closeInstallBanner()" style="background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;">&times;</button>
-    </div>
-  `;
-  document.body.appendChild(banner);
-  
-  // 애니메이션 스타일 추가
-  if (!document.getElementById('pwa-style')) {
-    const style = document.createElement('style');
-    style.id = 'pwa-style';
-    style.textContent = '@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
-    document.head.appendChild(style);
-  }
-}
-
-function installPWA() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choice => {
-      if (choice.outcome === 'accepted') {
-        console.log('PWA 설치 완료');
-      }
-      deferredPrompt = null;
-      closeInstallBanner();
-    });
-  }
-}
-
-function closeInstallBanner() {
-  const banner = document.getElementById('pwa-banner');
-  if (banner) banner.remove();
-  sessionStorage.setItem('pwa_banner_closed', 'true');
 }
 </script>
 </body>

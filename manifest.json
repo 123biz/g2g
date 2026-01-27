@@ -1,8 +1,8 @@
 {
-  "name": "군산 강소특구 성과 및 수요조사",
+  "name": "군산G2G 응답현황",
   "short_name": "군산G2G",
-  "description": "군산 강소특구 G2G 프로그램 수혜기업 성과 및 수요조사",
-  "start_url": "./index.html",
+  "description": "군산 강소특구 G2G 프로그램 설문 응답 현황 대시보드",
+  "start_url": "./dashboard.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f8fafc",
@@ -60,13 +60,6 @@
     }
   ],
   "shortcuts": [
-    {
-      "name": "설문 작성",
-      "short_name": "설문",
-      "description": "설문조사 작성하기",
-      "url": "./index.html",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
     {
       "name": "응답 현황",
       "short_name": "현황",
