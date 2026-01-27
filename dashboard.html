@@ -1069,13 +1069,11 @@ function showInstallBanner() {
   const banner = document.createElement('div');
   banner.id = 'pwa-banner';
   banner.innerHTML = `
-    <div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#4f46e5,#3730a3);color:#fff;padding:16px 20px;border-radius:16px;box-shadow:0 8px 32px rgba(79,70,229,0.3);z-index:9998;display:flex;align-items:center;gap:16px;max-width:90%;animation:slideUp 0.4s ease-out;">
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">📱 앱으로 설치하기</div>
-        <div style="font-size:0.8rem;opacity:0.9;">홈 화면에 추가하면 더 빠르게 접속할 수 있어요!</div>
-      </div>
-      <button onclick="installPWA()" style="background:#fff;color:#4f46e5;border:none;padding:10px 20px;border-radius:10px;font-weight:700;font-size:0.85rem;cursor:pointer;white-space:nowrap;">설치</button>
-      <button onclick="closeInstallBanner()" style="background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;opacity:0.7;line-height:1;">&times;</button>
+    <div style="position:fixed;bottom:20px;left:16px;right:16px;background:linear-gradient(135deg,#1e1b4b,#312e81);color:#fff;padding:20px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:9998;animation:slideUp 0.4s ease-out;">
+      <button onclick="closeInstallBanner()" style="position:absolute;top:12px;right:12px;background:transparent;border:none;color:#fff;font-size:1.3rem;cursor:pointer;opacity:0.6;line-height:1;padding:4px;">&times;</button>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:8px;">📱 앱으로 설치</div>
+      <div style="font-size:0.85rem;opacity:0.85;margin-bottom:16px;">홈 화면에 추가하면 더 빠르게 접속할 수 있어요!</div>
+      <button onclick="installPWA()" style="width:100%;background:#fff;color:#312e81;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;">설치하기</button>
     </div>
   `;
   document.body.appendChild(banner);
@@ -1084,7 +1082,7 @@ function showInstallBanner() {
   if (!document.getElementById('pwa-style')) {
     const style = document.createElement('style');
     style.id = 'pwa-style';
-    style.textContent = '@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+    style.textContent = '@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}';
     document.head.appendChild(style);
   }
 }
