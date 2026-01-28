@@ -1155,17 +1155,21 @@ async function doLookup() {
     g2gAdditionalMode = false;
     document.getElementById('dispBizNo').textContent = bizNo;
 
-    // 처음 응답하는 G2G 기업: A2 자동 '예' 설정 및 변경 불가
+    // A2: G2G 여부 자동 설정 및 잠금 (명단 기준)
     const isG2GCompany = G2G_COMPANIES.includes(bizNo);
     if (isG2GCompany) {
       document.getElementById('g2g_y').checked = true;
       document.getElementById('g2g_n').checked = false;
-      document.getElementById('g2g_y').disabled = true;
-      document.getElementById('g2g_n').disabled = true;
-      updateG2GBenefit();
-      renderStepBar();
-      updateStep6Btn();
+    } else {
+      document.getElementById('g2g_y').checked = false;
+      document.getElementById('g2g_n').checked = true;
     }
+    // G2G 여부 변경 불가 (모든 기업)
+    document.getElementById('g2g_y').disabled = true;
+    document.getElementById('g2g_n').disabled = true;
+    updateG2GBenefit();
+    renderStepBar();
+    updateStep6Btn();
 
     if (company) {
       // 기존 기업
@@ -1514,7 +1518,6 @@ async function submitSurvey() {
     if (g2gAdditionalMode) {
       // G2G 추가 입력 모드: 전체 내용 UPDATE (수정 가능)
       payload.g2g_flag = 'YES'; // G2G로 강제 설정
-      payload.submitted_at = new Date().toISOString(); // 재제출 시간 업데이트
       const result = await db.from('responses').update(payload).eq('biz_no', currentBizNo);
       error = result.error;
     } else {
