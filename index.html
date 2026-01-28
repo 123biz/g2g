@@ -1514,6 +1514,7 @@ async function submitSurvey() {
     if (g2gAdditionalMode) {
       // G2G 추가 입력 모드: 전체 내용 UPDATE (수정 가능)
       payload.g2g_flag = 'YES'; // G2G로 강제 설정
+      payload.submitted_at = new Date().toISOString(); // 재제출 시간 업데이트
       const result = await db.from('responses').update(payload).eq('biz_no', currentBizNo);
       error = result.error;
     } else {
