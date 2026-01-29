@@ -120,6 +120,11 @@
       flex-wrap: wrap;
       align-items: center;
     }
+    .filter-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
     .search-input {
       padding: 10px 14px;
       border: 2px solid var(--border);
@@ -336,10 +341,11 @@
       .stat-card { padding: 16px; }
       .stat-value { font-size: 1.6rem; }
       .card-header { flex-direction: column; align-items: stretch; }
-      .filter-row { flex-wrap: wrap; }
+      .filter-row { flex-direction: column; }
       .search-input { width: 100%; }
-      .filter-select { flex: 1; min-width: 0; }
-      .btn-export { flex: 1; min-width: 0; }
+      .filter-actions { width: 100%; }
+      .filter-actions .filter-select { flex: 1; min-width: 0; }
+      .filter-actions .btn-export { flex: 1; min-width: 0; white-space: nowrap; }
     }
   </style>
 </head>
@@ -391,12 +397,14 @@
       <h2>응답 기업 목록</h2>
       <div class="filter-row">
         <input type="text" id="searchInput" class="search-input" placeholder="업체명, 사업자번호 검색...">
-        <select id="filterType" class="filter-select">
-          <option value="">전체</option>
-          <option value="YES">G2G 참여기업</option>
-          <option value="NO">일반 수혜기업</option>
-        </select>
-        <button onclick="exportCSV()" class="btn-export">응답 목록 CSV 다운로드</button>
+        <div class="filter-actions">
+          <select id="filterType" class="filter-select">
+            <option value="">전체</option>
+            <option value="YES">G2G 참여기업</option>
+            <option value="NO">일반 수혜기업</option>
+          </select>
+          <button onclick="exportCSV()" class="btn-export">CSV 다운로드</button>
+        </div>
       </div>
     </div>
     <div class="card-body">
