@@ -338,6 +338,13 @@
       .card-header { flex-direction: column; align-items: stretch; }
       .filter-row { flex-direction: column; }
       .search-input { width: 100%; }
+      
+      /* 모바일: 오늘 응답 숨기고 순서 변경 (전체→미응답→G2G→일반) */
+      .stat-card.today { display: none; }
+      .stat-card.total { order: 1; }
+      .stat-card.noresponse { order: 2; }
+      .stat-card.g2g { order: 3; }
+      .stat-card.general { order: 4; }
     }
   </style>
 </head>
