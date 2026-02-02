@@ -292,7 +292,7 @@
           <table class="info-table">
             <tr><th class="required">업체명</th><td><input type="text" id="f_name" name="company_name" readonly></td><th class="required">설립년도</th><td><input type="text" id="f_year" name="found_year" readonly></td></tr>
             <tr><th class="required">대표자</th><td><input type="text" id="f_ceo" name="ceo" readonly></td><th class="required">업종<span class="sub-label">(한국표준산업분류)</span></th><td><input type="text" id="f_industry" name="industry" readonly></td></tr>
-            <tr><th class="required">사업자<br>등록번호</th><td><input type="text" id="f_bizno" name="biz_no_display" readonly></td><th class="required">법인<br>등록번호</th><td><input type="text" id="f_corpno" name="corp_no" readonly></td></tr>
+            <tr><th class="required">사업자<br>등록번호</th><td><input type="text" id="f_bizno" name="biz_no_display" readonly></td><th>법인<br>등록번호</th><td><input type="text" id="f_corpno" name="corp_no" readonly></td></tr>
           </table>
 
           <table class="info-table">
@@ -858,7 +858,6 @@ function validateStep(step) {
       { id: 'f_ceo', label: '대표자' },
       { id: 'f_industry', label: '업종' },
       { id: 'f_bizno', label: '사업자등록번호' },
-      { id: 'f_corpno', label: '법인등록번호' },
       { id: 'f_addrHq', label: '본사 주소' },
       { id: 'f_telHq', label: '본사 전화' }
     ];
